@@ -40,7 +40,8 @@ EOF
   printf "  ${COLOR_CYAN}[4]${COLOR_NEUTRAL} Help\n"
   printf "  ${COLOR_NEUTRAL}[5]${COLOR_NEUTRAL} Update\n"
   printf "  ${COLOR_WHITE}[6]${COLOR_NEUTRAL} Difficulty\n"
-  printf "  ${COLOR_RED}[7]${COLOR_NEUTRAL} Quit\n\n"
+  printf "  ${COLOR_YELLOW}[7]${COLOR_NEUTRAL} Controls\n"
+  printf "  ${COLOR_RED}[8]${COLOR_NEUTRAL} Quit\n\n"
   printf "  Select option: "
   
   read -r menu_choice
@@ -74,6 +75,10 @@ EOF
       show_main_menu
       ;;
     7)
+      show_controls_menu
+      show_main_menu
+      ;;
+    8)
       printf "\n  ${COLOR_CYAN}Thanks for playing! Fly safe, pilot!${COLOR_NEUTRAL}\n\n"
       exit 0
       ;;
@@ -172,10 +177,10 @@ show_help() {
   printf "${COLOR_CYAN}║${COLOR_NEUTRAL}         STAR RUNNER - MISSION BRIEFING            ${COLOR_CYAN}║${COLOR_NEUTRAL}\n"
   printf "${COLOR_CYAN}╚═══════════════════════════════════════════════════╝${COLOR_NEUTRAL}\n\n"
   printf "${COLOR_YELLOW}CONTROLS:${COLOR_NEUTRAL}\n"
-  printf "  Arrow Keys - Navigate your ship\n"
-  printf "  [SPACE]    - Fire laser (uses ammo)\n"
-  printf "  [P]        - Pause/Resume\n"
-  printf "  [Q]        - Quit mission\n\n"
+  printf "  $(key_display_name "$KEY_UP")/$(key_display_name "$KEY_DOWN")/$(key_display_name "$KEY_LEFT")/$(key_display_name "$KEY_RIGHT") - Navigate your ship\n"
+  printf "  [$(key_display_name "$KEY_FIRE")]    - Fire laser (uses ammo)\n"
+  printf "  [$(key_display_name "$KEY_PAUSE")]        - Pause/Resume\n"
+  printf "  [$(key_display_name "$KEY_QUIT")]        - Quit mission\n\n"
   printf "${COLOR_GREEN}OBJECTIVE:${COLOR_NEUTRAL}\n"
   printf "  Navigate through space, dodge asteroids, collect crystals!\n"
   printf "  Destroy asteroids with your laser for bonus points.\n"

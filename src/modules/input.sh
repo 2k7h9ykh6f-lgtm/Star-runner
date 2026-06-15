@@ -25,37 +25,37 @@ handle_input() {
   ship_speed=$((ship_speed + 0))
 
   case $key in
-    A) # Up arrow - always move 1 line at a time vertically
+    "${KEY_UP}") # Move up
       if [ "$ship_line" -gt 3 ]; then
         clear_ship
         ship_line=$((ship_line - 1))
       fi
       ;;
-    B) # Down arrow - always move 1 line at a time vertically
+    "${KEY_DOWN}") # Move down
       if [ "$ship_line" -lt $((NUM_LINES - 2)) ]; then
         clear_ship
         ship_line=$((ship_line + 1))
       fi
       ;;
-    C) # Right arrow - use ship speed for horizontal movement
+    "${KEY_RIGHT}") # Move right - use ship speed for horizontal movement
       if [ "$ship_column" -lt $((NUM_COLUMNS - 10)) ]; then
         clear_ship
         ship_column=$((ship_column + ship_speed))
       fi
       ;;
-    D) # Left arrow - use ship speed for horizontal movement
+    "${KEY_LEFT}") # Move left - use ship speed for horizontal movement
       if [ "$ship_column" -gt 5 ]; then
         clear_ship
         ship_column=$((ship_column - ship_speed))
       fi
       ;;
-    q|Q) # Quit
+    "${KEY_QUIT}"|"$(printf '%s' "$KEY_QUIT" | tr '[:lower:]' '[:upper:]')") # Quit
       on_exit
       ;;
-    p|P) # Pause
+    "${KEY_PAUSE}"|"$(printf '%s' "$KEY_PAUSE" | tr '[:lower:]' '[:upper:]')") # Pause
       toggle_pause
       ;;
-    ' ') # Spacebar - fire weapon
+    "${KEY_FIRE}") # Fire weapon
       fire_weapon
       ;;
   esac

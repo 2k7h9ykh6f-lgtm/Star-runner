@@ -72,6 +72,19 @@ combo_streak=0
 combo_timer=0
 last_points=0
 
+# Boss event state (single self-contained entity; separate from asteroids)
+boss_active=0
+boss_line=0
+boss_col=0
+boss_hp=0
+boss_max_hp=0
+boss_phase=0
+boss_dir=-1
+boss_hold_col=0
+boss_drift_left=0
+boss_drift_right=0
+last_boss_level=0
+
 # Accessibility + challenge tuning
 difficulty_name="Classic"
 score_multiplier=1
@@ -136,6 +149,13 @@ while true; do
       sleep 1
       move_cursor $center_line $center_col
       printf "                      "
+
+      # Trigger a boss every BOSS_LEVEL_INTERVAL levels (one boss at a time)
+      if [ "$boss_active" -eq 0 ] \
+         && [ $((level % BOSS_LEVEL_INTERVAL)) -eq 0 ] \
+         && [ "$level" -ne "$last_boss_level" ]; then
+        spawn_boss
+      fi
     fi
 
     # --------------------------
@@ -158,6 +178,7 @@ while true; do
     move_crystal
     move_powerup
     move_laser
+    move_boss
 
     # --------------------------
     # Collisions & timers

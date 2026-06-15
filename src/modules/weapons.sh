@@ -158,5 +158,41 @@ check_laser_hits() {
       fi
       i=$((i + 1))
     done
+
+    # Boss hit check (only if this laser survived the asteroid pass above)
+    if [ "$boss_active" = 1 ]; then
+      if [ "$laser_num" = 1 ]; then
+        laser_still_active=$laser_active
+      elif [ "$laser_num" = 2 ]; then
+        laser_still_active=$laser2_active
+      else
+        laser_still_active=$laser3_active
+      fi
+
+      if [ "$laser_still_active" = 1 ] \
+         && [ "$current_laser_line" = "$boss_line" ] \
+         && [ "$current_laser_col" -ge "$boss_col" ] \
+         && [ "$current_laser_col" -le $((boss_col + BOSS_WIDTH - 1)) ]; then
+        # Damage the boss and consume the laser
+        boss_hp=$((boss_hp - 1))
+        if [ "$laser_num" = 1 ]; then
+          laser_active=0
+        elif [ "$laser_num" = 2 ]; then
+          laser2_active=0
+        else
+          laser3_active=0
+        fi
+
+        # Small reward + hit flash on the boss
+        add_score_points 2
+        move_cursor "$current_laser_line" "$current_laser_col"
+        printf "${COLOR_YELLOW}✦${COLOR_NEUTRAL}"
+
+        # Boss destroyed?
+        if [ "$boss_hp" -le 0 ]; then
+          boss_defeat
+        fi
+      fi
+    fi
   done
 }

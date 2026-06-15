@@ -27,6 +27,14 @@ MIN_NUM_LINES=20
 # Game timing
 TURN_DURATION=2
 
+# Boss event tuning
+BOSS_LEVEL_INTERVAL=3      # Spawn a boss every N levels (3, 6, 9, ...)
+BOSS_BASE_HP=8             # Base boss hit points (scales up with level)
+BOSS_WIDTH=7               # Boss sprite width in columns (wider than asteroids)
+BOSS_MOVE_EVERY=2          # Advance/drift the boss once every N frames
+BOSS_REWARD_SCORE=100      # Base score awarded for defeating a boss
+BOSS_REWARD_CRYSTALS=5     # Crystals awarded for defeating a boss
+
 # Get current terminal size
 TERMINAL_SIZE=$(stty size)
 NUM_COLUMNS="${TERMINAL_SIZE##* }"

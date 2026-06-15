@@ -142,6 +142,31 @@ draw_hud() {
     move_cursor 2 $col_offset
     printf "⟨RAPID⟩"
   fi
+
+  # Boss HP indicator (only while a boss is active; slot cleared otherwise)
+  if [ "$boss_active" = 1 ]; then
+    move_cursor 3 31
+    printf "${COLOR_RED}BOSS "
+    boss_bar_filled=$((boss_hp * 6 / boss_max_hp))
+    [ "$boss_bar_filled" -lt 0 ] && boss_bar_filled=0
+    [ "$boss_bar_filled" -gt 6 ] && boss_bar_filled=6
+    if [ "$boss_hp" -gt 0 ] && [ "$boss_bar_filled" -eq 0 ]; then
+      boss_bar_filled=1
+    fi
+    boss_bar_seg=0
+    while [ "$boss_bar_seg" -lt 6 ]; do
+      if [ "$boss_bar_seg" -lt "$boss_bar_filled" ]; then
+        printf "▰"
+      else
+        printf "▱"
+      fi
+      boss_bar_seg=$((boss_bar_seg + 1))
+    done
+    printf "$COLOR_NEUTRAL"
+  else
+    move_cursor 3 31
+    printf "            "
+  fi
   
   printf "$COLOR_NEUTRAL"
 }

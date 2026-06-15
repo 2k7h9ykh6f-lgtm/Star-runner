@@ -67,6 +67,34 @@ check_collisions() {
     i=$((i + 1))
   done
   
+  # Check ship vs boss (same shield/super/life rules; the boss is NOT destroyed)
+  if [ "$boss_active" = 1 ] && [ "$ship_line" = "$boss_line" ]; then
+    if [ "$ship_column" -ge "$boss_col" ] && [ "$ship_column" -le $((boss_col + BOSS_WIDTH - 1)) ]; then
+      if [ "$grace_timer" -gt 0 ]; then
+        :
+      elif [ "$shield_active" = 1 ]; then
+        # Shield absorbs the hit; grace window lets the player escape the boss
+        shield_active=0
+        grace_timer=12
+      elif [ "$super_mode_active" = 1 ]; then
+        # Super mode keeps the player safe and chips the boss (grace gates the drain)
+        boss_hp=$((boss_hp - 1))
+        grace_timer=12
+        if [ "$boss_hp" -le 0 ]; then
+          boss_defeat
+        fi
+      else
+        # Lose one life before game over
+        player_lives=$((player_lives - 1))
+        grace_timer=12
+        reset_combo
+        if [ "$player_lives" -le 0 ]; then
+          on_game_over
+        fi
+      fi
+    fi
+  fi
+
   # Check ship vs crystal
   if [ "$crystal_active" = 1 ]; then
     if [ "$ship_line" = "$crystal_line" ]; then

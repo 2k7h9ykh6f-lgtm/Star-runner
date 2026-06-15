@@ -52,12 +52,17 @@ fire_weapon() {
 
 # Move all active lasers
 move_laser() {
+  # Interceptor's Rapid Fire skill makes lasers travel faster, so the single
+  # on-screen laser clears sooner and the player can fire again more often.
+  laser_step=2
+  [ "${skill_rapid:-0}" = 1 ] && laser_step=4
+
   # Move laser 1
   if [ "$laser_active" = 1 ]; then
     move_cursor "$laser_line" "$laser_col"
     printf " "
     
-    laser_col=$((laser_col + 2))
+    laser_col=$((laser_col + laser_step))
     
     if [ "$laser_col" -ge "$NUM_COLUMNS" ]; then
       laser_active=0
@@ -72,7 +77,7 @@ move_laser() {
     move_cursor "$laser2_line" "$laser2_col"
     printf " "
     
-    laser2_col=$((laser2_col + 2))
+    laser2_col=$((laser2_col + laser_step))
     
     if [ "$laser2_col" -ge "$NUM_COLUMNS" ]; then
       laser2_active=0
@@ -87,7 +92,7 @@ move_laser() {
     move_cursor "$laser3_line" "$laser3_col"
     printf " "
     
-    laser3_col=$((laser3_col + 2))
+    laser3_col=$((laser3_col + laser_step))
     
     if [ "$laser3_col" -ge "$NUM_COLUMNS" ]; then
       laser3_active=0

@@ -30,7 +30,7 @@ ships[2_ammo]=25
 ships[2_health]=60
 ships[2_price]=150
 ships[2_unlock_level]=5
-ships[2_ability]="Double Shot"
+ships[2_ability]="Rapid Fire"
 ships[2_max_speed]=3
 
 ships[3_name]="Frigate"
@@ -100,6 +100,17 @@ get_ship_price() { echo "${ships[$1_price]}"; }
 get_ship_unlock_level() { echo "${ships[$1_unlock_level]}"; }
 get_ship_ability() { echo "${ships[$1_ability]}"; }
 get_ship_max_speed() { echo "${ships[$1_max_speed]}"; }
+
+# Short human-readable description of each ship's active (E key) skill
+get_ship_ability_desc() {
+  case $1 in
+    1) echo "Brief burst of extra speed" ;;
+    2) echo "Faster lasers = higher fire rate" ;;
+    3) echo "Gain a one-hit protective shield" ;;
+    4) echo "Clear all asteroids on screen" ;;
+    5) echo "Temporary invincibility" ;;
+  esac
+}
 
 get_skin_name() { echo "${skins[$1_name]}"; }
 get_skin_color() { echo "${skins[$1_color]}"; }
@@ -219,6 +230,8 @@ show_hangar() {
       local ship_speed=$(get_ship_speed $id)
       local ship_ammo=$(get_ship_ammo $id)
       local ship_price=$(get_ship_price $id)
+      local ship_ability=$(get_ship_ability $id)
+      local ship_skill_desc=$(get_ship_ability_desc $id)
 
       if check_ownership "$id" "$owned_ships"; then
         if [ "$current_ship" = "$id" ]; then
@@ -231,6 +244,7 @@ show_hangar() {
       fi
 
       printf "  ${COLOR_CYAN}[$id]${COLOR_NEUTRAL} $ship_icon $ship_name - Speed:$ship_speed Ammo:$ship_ammo $status\n"
+      printf "      ${COLOR_MAGENTA}Skill:${COLOR_NEUTRAL} ${ship_ability} - ${ship_skill_desc}\n"
     done
 
     printf "\n  ${COLOR_GREEN}[E]${COLOR_NEUTRAL} Equip | ${COLOR_YELLOW}[B]${COLOR_NEUTRAL} Buy | ${COLOR_MAGENTA}[S]${COLOR_NEUTRAL} Skins | ${COLOR_WHITE}[R]${COLOR_NEUTRAL} Return\n"

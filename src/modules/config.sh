@@ -27,6 +27,10 @@ MIN_NUM_LINES=20
 # Game timing
 TURN_DURATION=2
 
+# Ship active-skill tuning (in game frames)
+SKILL_DURATION=30   # how long a timed skill effect lasts (speed boost / rapid fire)
+SKILL_COOLDOWN=60   # frames before the skill can be triggered again
+
 # Get current terminal size
 TERMINAL_SIZE=$(stty size)
 NUM_COLUMNS="${TERMINAL_SIZE##* }"

@@ -112,6 +112,17 @@ draw_hud() {
   move_cursor 3 5
   printf "MODE: $difficulty_name | COMBO: x$combo_streak"
 
+  # Active ship-skill status / cooldown (E key)
+  move_cursor 3 30
+  if [ "$skill_cooldown" -gt 0 ]; then
+    printf "${COLOR_RED}SKILL[E]:CD%-3s${COLOR_NEUTRAL}" "$skill_cooldown"
+  elif [ "$skill_active" = 1 ]; then
+    printf "${COLOR_CYAN}SKILL[E]:%-5s${COLOR_NEUTRAL}" "ON"
+  else
+    printf "${COLOR_GREEN}SKILL[E]:%-5s${COLOR_NEUTRAL}" "READY"
+  fi
+  printf "$COLOR_YELLOW"
+
   if [ "$(type -t get_punishment_status_text)" = "function" ]; then
     move_cursor 3 45
     printf "PUNISH: %-14s" "$(get_punishment_status_text)"

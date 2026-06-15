@@ -24,6 +24,9 @@ handle_input() {
   ship_speed=$(get_ship_speed "$current_ship")
   ship_speed=$((ship_speed + 0))
 
+  # Scout's Speed Boost skill temporarily increases movement speed
+  [ "${skill_speed_boost:-0}" = 1 ] && ship_speed=$((ship_speed + 1))
+
   case $key in
     A) # Up arrow - always move 1 line at a time vertically
       if [ "$ship_line" -gt 3 ]; then
@@ -57,6 +60,9 @@ handle_input() {
       ;;
     ' ') # Spacebar - fire weapon
       fire_weapon
+      ;;
+    e|E) # Activate the current ship's active skill (disabled while paused)
+      [ "$paused" -eq 0 ] && activate_skill
       ;;
   esac
 }

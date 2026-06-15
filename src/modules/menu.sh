@@ -40,7 +40,9 @@ EOF
   printf "  ${COLOR_CYAN}[4]${COLOR_NEUTRAL} Help\n"
   printf "  ${COLOR_NEUTRAL}[5]${COLOR_NEUTRAL} Update\n"
   printf "  ${COLOR_WHITE}[6]${COLOR_NEUTRAL} Difficulty\n"
-  printf "  ${COLOR_RED}[7]${COLOR_NEUTRAL} Quit\n\n"
+  printf "  ${COLOR_YELLOW}[7]${COLOR_NEUTRAL} Achievements\n"
+  printf "  ${COLOR_CYAN}[8]${COLOR_NEUTRAL} Daily Missions\n"
+  printf "  ${COLOR_RED}[9]${COLOR_NEUTRAL} Quit\n\n"
   printf "  Select option: "
   
   read -r menu_choice
@@ -74,6 +76,14 @@ EOF
       show_main_menu
       ;;
     7)
+      show_achievements_page
+      show_main_menu
+      ;;
+    8)
+      show_daily_missions_page
+      show_main_menu
+      ;;
+    9)
       printf "\n  ${COLOR_CYAN}Thanks for playing! Fly safe, pilot!${COLOR_NEUTRAL}\n\n"
       exit 0
       ;;

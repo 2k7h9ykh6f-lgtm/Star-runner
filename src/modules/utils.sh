@@ -72,6 +72,11 @@ register_asteroid_destroy() {
   combo_streak=$((combo_streak + 1))
   combo_timer=0
 
+  # Track lifetime max combo for achievements
+  if [ "$combo_streak" -gt "$max_combo_ever" ]; then
+    max_combo_ever=$combo_streak
+  fi
+
   if [ "$combo_streak" -ge 3 ]; then
     combo_bonus=$((combo_streak * 2))
     score=$((score + combo_bonus))
@@ -96,11 +101,12 @@ on_exit() {
     if [ "$score" -gt "$high_score" ]; then
       high_score=$score
     fi
-    
+
     total_crystals=$((total_crystals + crystals_collected))
     total_asteroids=$((total_asteroids + asteroids_destroyed))
     crystal_bank=$((crystal_bank + crystals_collected))
-    
+    games_played=$((games_played + 1))
+
     save_profile
   fi
   
@@ -196,6 +202,21 @@ EOF
     printf "${COLOR_RED}Singularity Protocol${COLOR_NEUTRAL}\n"
   else
     printf "${COLOR_RED}NEXUS-ZERO // 01101001${COLOR_NEUTRAL}\n"
+  fi
+
+  # Check and display daily mission progress
+  if type check_daily_mission_progress >/dev/null 2>&1; then
+    check_daily_mission_progress
+  fi
+
+  # Check achievements
+  if type check_all_achievements >/dev/null 2>&1; then
+    check_all_achievements
+  fi
+
+  # Show daily mission progress summary
+  if type show_mission_progress >/dev/null 2>&1; then
+    show_mission_progress
   fi
 
   printf "\n  ${COLOR_CYAN}Created by Dulsara(SYNAPSNEX)${COLOR_NEUTRAL}\n"

@@ -154,6 +154,7 @@ buy_ship() {
     crystal_bank=$((crystal_bank - price))
     owned_ships=$(add_to_owned "$id" "$owned_ships")
     current_ship=$id
+    first_purchase_made=1
     save_profile
     printf "\n  ${COLOR_GREEN}✓ Purchased and equipped $name!${COLOR_NEUTRAL}\n"
     sleep 2
@@ -193,6 +194,7 @@ buy_skin() {
     crystal_bank=$((crystal_bank - price))
     owned_skins=$(add_to_owned "$id" "$owned_skins")
     current_skin=$id
+    first_purchase_made=1
     save_profile
     printf "\n  ${COLOR_GREEN}✓ Purchased and applied $name skin!${COLOR_NEUTRAL}\n"
     sleep 2

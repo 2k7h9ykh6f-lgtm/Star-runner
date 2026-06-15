@@ -24,6 +24,19 @@ current_ship=1
 current_skin=1
 owned_ships="1"
 owned_skins="1"
+
+# Achievement & Daily Mission fields
+achievements_unlocked=""
+max_combo_ever=0
+total_games_won=0
+daily_date=""
+daily_crystals_done=0
+daily_asteroids_done=0
+daily_combo_done=0
+daily_score_done=0
+daily_chaos_done=0
+daily_completed_count=0
+first_purchase_made=0
 EOF
 )
 
@@ -134,6 +147,19 @@ create_new_profile() {
     owned_ships="1"
     owned_skins="1"
 
+    # Achievement & Daily Mission fields
+    achievements_unlocked=""
+    max_combo_ever=0
+    total_games_won=0
+    daily_date=""
+    daily_crystals_done=0
+    daily_asteroids_done=0
+    daily_combo_done=0
+    daily_score_done=0
+    daily_chaos_done=0
+    daily_completed_count=0
+    first_purchase_made=0
+
     # Save profile
     save_profile
 
@@ -157,6 +183,19 @@ load_profile() {
     punishment_level=$((punishment_level + 0))
     punishment_expires=$((punishment_expires + 0))
     punishment_prev_days=$((punishment_prev_days + 0))
+
+    # Achievement & Daily Mission fields (backward-compatible defaults)
+    achievements_unlocked="${achievements_unlocked:-}"
+    max_combo_ever=$((max_combo_ever + 0))
+    total_games_won=$((total_games_won + 0))
+    daily_date="${daily_date:-}"
+    daily_crystals_done=$((daily_crystals_done + 0))
+    daily_asteroids_done=$((daily_asteroids_done + 0))
+    daily_combo_done=$((daily_combo_done + 0))
+    daily_score_done=$((daily_score_done + 0))
+    daily_chaos_done=$((daily_chaos_done + 0))
+    daily_completed_count=$((daily_completed_count + 0))
+    first_purchase_made=$((first_purchase_made + 0))
 }
 
 save_profile() {
@@ -186,6 +225,19 @@ punishment_backup_skin="$punishment_backup_skin"
 punishment_backup_ship="$punishment_backup_ship"
 punishment_backup_ammo="$punishment_backup_ammo"
 punishment_prev_days=$punishment_prev_days
+
+# Achievement & Daily Mission fields
+achievements_unlocked="$achievements_unlocked"
+max_combo_ever=$max_combo_ever
+total_games_won=$total_games_won
+daily_date="$daily_date"
+daily_crystals_done=$daily_crystals_done
+daily_asteroids_done=$daily_asteroids_done
+daily_combo_done=$daily_combo_done
+daily_score_done=$daily_score_done
+daily_chaos_done=$daily_chaos_done
+daily_completed_count=$daily_completed_count
+first_purchase_made=$first_purchase_made
 EOF
     # Update checksum
     echo "$(generate_checksum)" > "$CHECKSUM_FILE"

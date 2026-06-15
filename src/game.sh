@@ -27,9 +27,7 @@ source "$SCRIPT_DIR/modules/input.sh"
 source "$SCRIPT_DIR/modules/effects.sh"
 source "$SCRIPT_DIR/modules/punishments.sh"
 source "$SCRIPT_DIR/modules/inventory.sh"   # Optional: career stats module
-
-# Init tamper-proof achievements
-#init_achievements
+source "$SCRIPT_DIR/modules/achievements.sh" # Achievements & daily missions
 
 # Parse CLI arguments
 while :; do
@@ -71,6 +69,7 @@ asteroids_destroyed=0
 combo_streak=0
 combo_timer=0
 last_points=0
+chaos_frames=0
 
 # Accessibility + challenge tuning
 difficulty_name="Classic"
@@ -80,6 +79,9 @@ player_lives=2
 
 # Load profile (high score, crystals, stats)
 init_profile
+
+# Init achievements and daily mission state (after profile is loaded)
+init_achievements
 
 # Show main menu
 show_main_menu
@@ -179,6 +181,13 @@ while true; do
     # --------------------------
     draw_ship
     draw_hud
+
+    # --------------------------
+    # Track chaos mode survival
+    # --------------------------
+    if [ "$difficulty_name" = "Chaos" ]; then
+      chaos_frames=$((chaos_frames + 1))
+    fi
 
     # --------------------------
     # Increment frame

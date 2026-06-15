@@ -92,15 +92,15 @@ on_enter() {
 
 # Cleanup and show final statistics
 on_exit() {
-  if [ -n "$player_name" ]; then
+  if [ -n "$player_name" ] && [ "$challenge_mode" -eq 0 ]; then
     if [ "$score" -gt "$high_score" ]; then
       high_score=$score
     fi
-    
+
     total_crystals=$((total_crystals + crystals_collected))
     total_asteroids=$((total_asteroids + asteroids_destroyed))
     crystal_bank=$((crystal_bank + crystals_collected))
-    
+
     save_profile
   fi
   

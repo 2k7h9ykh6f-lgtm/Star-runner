@@ -37,10 +37,12 @@ EOF
   printf "  ${COLOR_GREEN}[1]${COLOR_NEUTRAL} Start Mission\n"
   printf "  ${COLOR_YELLOW}[2]${COLOR_NEUTRAL} Hangar (Ships & Skins)\n"
   printf "  ${COLOR_MAGENTA}[3]${COLOR_NEUTRAL} View Stats\n"
-  printf "  ${COLOR_CYAN}[4]${COLOR_NEUTRAL} Help\n"
-  printf "  ${COLOR_NEUTRAL}[5]${COLOR_NEUTRAL} Update\n"
-  printf "  ${COLOR_WHITE}[6]${COLOR_NEUTRAL} Difficulty\n"
-  printf "  ${COLOR_RED}[7]${COLOR_NEUTRAL} Quit\n\n"
+  printf "  ${COLOR_YELLOW}[4]${COLOR_NEUTRAL} Challenge Run\n"
+  printf "  ${COLOR_CYAN}[5]${COLOR_NEUTRAL} Help\n"
+  printf "  ${COLOR_NEUTRAL}[6]${COLOR_NEUTRAL} Update\n"
+  printf "  ${COLOR_WHITE}[7]${COLOR_NEUTRAL} Difficulty\n"
+  printf "  ${COLOR_YELLOW}[8]${COLOR_NEUTRAL} Challenge Scores\n"
+  printf "  ${COLOR_RED}[9]${COLOR_NEUTRAL} Quit\n\n"
   printf "  Select option: "
   
   read -r menu_choice
@@ -58,22 +60,33 @@ EOF
       show_main_menu
       ;;
     4)
+      if show_challenge_menu; then
+        init_challenge
+        return 0
+      fi
+      show_main_menu
+      ;;
+    5)
       show_help
       printf "\n  Press Enter to return..."
       read -r
       show_main_menu
       ;;
-    5)
+    6)
       update
       printf "\n  Press Enter to return..."
       read -r
       show_main_menu
       ;;
-    6)
+    7)
       show_difficulty_menu
       show_main_menu
       ;;
-    7)
+    8)
+      show_challenge_scores
+      show_main_menu
+      ;;
+    9)
       printf "\n  ${COLOR_CYAN}Thanks for playing! Fly safe, pilot!${COLOR_NEUTRAL}\n\n"
       exit 0
       ;;
@@ -199,6 +212,11 @@ show_help() {
   printf "${COLOR_YELLOW}DIFFICULTY:${COLOR_NEUTRAL}\n"
   printf "  Every 200 points = New Level\n"
   printf "  Higher levels = Faster asteroids + UFO enemies\n\n"
+  printf "${COLOR_YELLOW}CHALLENGE RUN:${COLOR_NEUTRAL}\n"
+  printf "  Fixed rules: Scout ship, 1 life, no lasers, no power-ups.\n"
+  printf "  120-second timed run — score as high as you can!\n"
+  printf "  Deterministic spawns for fair competition.\n"
+  printf "  Separate leaderboard tracks your best runs.\n\n"
   printf "${COLOR_WHITE}ACCESSIBILITY:${COLOR_NEUTRAL}\n"
   printf "  Choose Chill / Classic / Chaos from the main menu\n"
   printf "  More lives on Chill mode makes the game friendlier for new players.\n\n"

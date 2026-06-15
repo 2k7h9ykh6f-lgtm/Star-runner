@@ -136,6 +136,10 @@ move_crystal() {
 
 # Spawn a powerup
 spawn_powerup() {
+  # No powerups in challenge mode
+  if [ "$challenge_mode" -eq 1 ]; then
+    return
+  fi
   if [ "$powerup_active" = 0 ]; then
     chance=$(get_random_number 1 8)
     if [ "$chance" = 1 ]; then

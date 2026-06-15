@@ -27,6 +27,7 @@ source "$SCRIPT_DIR/modules/input.sh"
 source "$SCRIPT_DIR/modules/effects.sh"
 source "$SCRIPT_DIR/modules/punishments.sh"
 source "$SCRIPT_DIR/modules/inventory.sh"   # Optional: career stats module
+source "$SCRIPT_DIR/modules/challenge.sh"   # Challenge Run mode
 
 # Init tamper-proof achievements
 #init_achievements
@@ -77,6 +78,7 @@ difficulty_name="Classic"
 score_multiplier=1
 spawn_floor=2
 player_lives=2
+challenge_mode=0
 
 # Load profile (high score, crystals, stats)
 init_profile
@@ -121,21 +123,25 @@ while true; do
     # --------------------------
     # Level progression
     # --------------------------
-    new_level=$((score / 200 + 1))
-    if [ "$new_level" -ne "$level" ]; then
-      level=$new_level
-      speed_multiplier=$((level - 1))
+    if [ "$challenge_mode" -eq 1 ]; then
+      update_challenge_difficulty
+    else
+      new_level=$((score / 200 + 1))
+      if [ "$new_level" -ne "$level" ]; then
+        level=$new_level
+        speed_multiplier=$((level - 1))
 
-      # Level-up notification
-      printf "$COLOR_GREEN"
-      center_col=$((NUM_COLUMNS / 2 - 10))
-      center_line=$((NUM_LINES / 2))
-      move_cursor $center_line $center_col
-      printf " ★ LEVEL $level ★ "
-      printf "$COLOR_NEUTRAL"
-      sleep 1
-      move_cursor $center_line $center_col
-      printf "                      "
+        # Level-up notification
+        printf "$COLOR_GREEN"
+        center_col=$((NUM_COLUMNS / 2 - 10))
+        center_line=$((NUM_LINES / 2))
+        move_cursor $center_line $center_col
+        printf " ★ LEVEL $level ★ "
+        printf "$COLOR_NEUTRAL"
+        sleep 1
+        move_cursor $center_line $center_col
+        printf "                      "
+      fi
     fi
 
     # --------------------------
@@ -152,8 +158,10 @@ while true; do
     # --------------------------
     # Update entities
     # --------------------------
-    check_long_term_punishment
-    punishment_tick
+    if [ "$challenge_mode" -eq 0 ]; then
+      check_long_term_punishment
+      punishment_tick
+    fi
     move_asteroids
     move_crystal
     move_powerup
@@ -188,7 +196,7 @@ while true; do
     # --------------------------
     # Update career stats
     # --------------------------
-    if [ "$score" -gt "$high_score" ]; then
+    if [ "$challenge_mode" -eq 0 ] && [ "$score" -gt "$high_score" ]; then
       high_score=$score
     fi
   else

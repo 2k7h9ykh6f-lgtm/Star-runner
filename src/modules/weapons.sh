@@ -9,6 +9,10 @@
 
 # Fire weapon based on current weapon type
 fire_weapon() {
+  # Lasers disabled in challenge mode — dodge only
+  if [ "$challenge_mode" -eq 1 ]; then
+    return
+  fi
   if [ "$weapon_type" = 1 ]; then
     # Standard single laser
     if [ "$laser_active" = 0 ] && [ "$ammo" -gt 0 ]; then

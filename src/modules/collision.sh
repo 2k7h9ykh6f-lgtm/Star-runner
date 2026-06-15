@@ -58,7 +58,11 @@ check_collisions() {
             esac
 
             if [ "$player_lives" -le 0 ]; then
-              on_game_over
+              if [ "$challenge_mode" -eq 1 ]; then
+                on_challenge_destroyed
+              else
+                on_game_over
+              fi
             fi
           fi
         fi

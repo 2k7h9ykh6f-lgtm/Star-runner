@@ -99,10 +99,10 @@ draw_hud() {
   printf "$COLOR_YELLOW"
   move_cursor 2 5
   printf "SCORE: $score | LVL: $level"
-  
+
   move_cursor 2 30
   printf "AMMO: $ammo"
-  
+
   move_cursor 2 45
   printf "CRYSTALS: $crystals_collected"
 
@@ -112,7 +112,19 @@ draw_hud() {
   move_cursor 3 5
   printf "MODE: $difficulty_name | COMBO: x$combo_streak"
 
-  if [ "$(type -t get_punishment_status_text)" = "function" ]; then
+  # Challenge mode: show time remaining on row 4
+  if [ "$challenge_mode" -eq 1 ]; then
+    move_cursor 4 5
+    if [ "$challenge_time_left" -le 10 ]; then
+      printf "${COLOR_RED}TIME: ${challenge_time_left}s - SCORE AS MUCH AS YOU CAN!${COLOR_NEUTRAL}"
+    elif [ "$challenge_time_left" -le 30 ]; then
+      printf "${COLOR_YELLOW}TIME: ${challenge_time_left}s remaining${COLOR_NEUTRAL}                       "
+    else
+      printf "${COLOR_GREEN}TIME: ${challenge_time_left}s remaining${COLOR_NEUTRAL}                       "
+    fi
+  fi
+
+  if [ "$challenge_mode" -eq 0 ] && [ "$(type -t get_punishment_status_text)" = "function" ]; then
     move_cursor 3 45
     printf "PUNISH: %-14s" "$(get_punishment_status_text)"
   fi

@@ -208,9 +208,9 @@ buy_skin() {
 show_hangar() {
   while true; do
     clear
-    printf "${COLOR_CYAN}╔═══════════════════════════════════════════════════════╗${COLOR_NEUTRAL}\n"
-    printf "${COLOR_CYAN}║${COLOR_NEUTRAL}                    HANGAR - SHIP SELECTION            ${COLOR_CYAN}║${COLOR_NEUTRAL}\n"
-    printf "${COLOR_CYAN}╚═══════════════════════════════════════════════════════╝${COLOR_NEUTRAL}\n\n"
+    printf "${COLOR_CYAN}╔════════════════════════════════════════════════════════════════╗${COLOR_NEUTRAL}\n"
+    printf "${COLOR_CYAN}║${COLOR_NEUTRAL}                  HANGAR - SHIP SELECTION                      ${COLOR_CYAN}║${COLOR_NEUTRAL}\n"
+    printf "${COLOR_CYAN}╚════════════════════════════════════════════════════════════════╝${COLOR_NEUTRAL}\n\n"
     printf "  ${COLOR_YELLOW}Crystal Bank: ${crystal_bank}💎${COLOR_NEUTRAL}\n\n"
 
     for id in {1..5}; do
@@ -231,9 +231,27 @@ show_hangar() {
       fi
 
       printf "  ${COLOR_CYAN}[$id]${COLOR_NEUTRAL} $ship_icon $ship_name - Speed:$ship_speed Ammo:$ship_ammo $status\n"
+
+      # Show ability description
+      local ship_ability
+      ship_ability=$(get_ship_ability "$id")
+      if [ -n "$ship_ability" ]; then
+        local ability_desc
+        if [ "$(type -t get_ability_description)" = "function" ]; then
+          ability_desc=$(get_ability_description "$ship_ability")
+        else
+          ability_desc="$ship_ability"
+        fi
+        if check_ownership "$id" "$owned_ships"; then
+          printf "      ${COLOR_GREEN}Ability: ${ship_ability}${COLOR_NEUTRAL} - ${ability_desc}\n"
+        else
+          printf "      ${COLOR_RED}Ability: ???${COLOR_NEUTRAL}\n"
+        fi
+      fi
     done
 
     printf "\n  ${COLOR_GREEN}[E]${COLOR_NEUTRAL} Equip | ${COLOR_YELLOW}[B]${COLOR_NEUTRAL} Buy | ${COLOR_MAGENTA}[S]${COLOR_NEUTRAL} Skins | ${COLOR_WHITE}[R]${COLOR_NEUTRAL} Return\n"
+    printf "  ${COLOR_YELLOW}In-game: press [E] to trigger your ship's active ability${COLOR_NEUTRAL}\n"
     printf "\n  Select option: "
     read -r choice
 

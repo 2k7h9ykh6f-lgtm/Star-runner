@@ -62,6 +62,12 @@ super_mode_active=0
 super_timer=0
 weapon_type=1
 weapon_timer=0
+# Ship ability state
+ability_cd=0
+ability_active=0
+ability_timer=0
+speed_boost_active=0
+saved_ship_speed=0
 frame=0
 score=0
 level=1
@@ -165,6 +171,7 @@ while true; do
     check_laser_hits
     check_collisions
     update_timers
+    update_ability_timers
 
     # Combo timeout
     if [ "$combo_streak" -gt 0 ]; then

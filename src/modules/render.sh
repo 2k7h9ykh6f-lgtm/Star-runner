@@ -116,6 +116,24 @@ draw_hud() {
     move_cursor 3 45
     printf "PUNISH: %-14s" "$(get_punishment_status_text)"
   fi
+
+  # Ship ability indicator
+  if [ "$(type -t get_ship_ability)" = "function" ]; then
+    current_ship=$((current_ship + 0))
+    local abl_name
+    abl_name=$(get_ship_ability "$current_ship")
+    if [ -n "$abl_name" ]; then
+      move_cursor 3 70
+      if [ "$ability_active" = 1 ]; then
+        printf "${COLOR_CYAN}[E]${COLOR_WHITE} ${abl_name}: ACTIVE${COLOR_NEUTRAL}"
+      elif [ "$ability_cd" -gt 0 ]; then
+        local cd_sec=$(( (ability_cd + 4) / 5 ))
+        printf "${COLOR_YELLOW}[E]${COLOR_WHITE} ${abl_name}: ${cd_sec}s${COLOR_NEUTRAL}"
+      else
+        printf "${COLOR_GREEN}[E]${COLOR_WHITE} ${abl_name}: READY${COLOR_NEUTRAL}"
+      fi
+    fi
+  fi
   
   col_offset=60
   

@@ -24,6 +24,11 @@ handle_input() {
   ship_speed=$(get_ship_speed "$current_ship")
   ship_speed=$((ship_speed + 0))
 
+  # Apply speed boost from ship ability
+  if [ "$speed_boost_active" = 1 ]; then
+    ship_speed=$((ship_speed * 2))
+  fi
+
   case $key in
     A) # Up arrow - always move 1 line at a time vertically
       if [ "$ship_line" -gt 3 ]; then
@@ -57,6 +62,11 @@ handle_input() {
       ;;
     ' ') # Spacebar - fire weapon
       fire_weapon
+      ;;
+    e|E) # Ability key - trigger ship ability
+      if [ "$(type -t trigger_ability)" = "function" ]; then
+        trigger_ability
+      fi
       ;;
   esac
 }

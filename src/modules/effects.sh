@@ -40,4 +40,9 @@ update_timers() {
   if [ "$grace_timer" -gt 0 ]; then
     grace_timer=$((grace_timer - 1))
   fi
+
+  # Active-skill cooldown
+  if [ "${skill_cooldown:-0}" -gt 0 ]; then
+    skill_cooldown=$((skill_cooldown - 1))
+  fi
 }

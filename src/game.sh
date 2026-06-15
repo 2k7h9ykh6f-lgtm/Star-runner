@@ -60,6 +60,7 @@ shield_timer=0
 grace_timer=0
 super_mode_active=0
 super_timer=0
+skill_cooldown=0
 weapon_type=1
 weapon_timer=0
 frame=0

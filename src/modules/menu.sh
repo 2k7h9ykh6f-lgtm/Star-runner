@@ -40,7 +40,8 @@ EOF
   printf "  ${COLOR_CYAN}[4]${COLOR_NEUTRAL} Help\n"
   printf "  ${COLOR_NEUTRAL}[5]${COLOR_NEUTRAL} Update\n"
   printf "  ${COLOR_WHITE}[6]${COLOR_NEUTRAL} Difficulty\n"
-  printf "  ${COLOR_RED}[7]${COLOR_NEUTRAL} Quit\n\n"
+  printf "  ${COLOR_CYAN}[7]${COLOR_NEUTRAL} Controls\n"
+  printf "  ${COLOR_RED}[8]${COLOR_NEUTRAL} Quit\n\n"
   printf "  Select option: "
   
   read -r menu_choice
@@ -74,6 +75,10 @@ EOF
       show_main_menu
       ;;
     7)
+      show_controls_menu
+      show_main_menu
+      ;;
+    8)
       printf "\n  ${COLOR_CYAN}Thanks for playing! Fly safe, pilot!${COLOR_NEUTRAL}\n\n"
       exit 0
       ;;
@@ -116,6 +121,89 @@ show_difficulty_menu() {
       score_multiplier=1
       ;;
   esac
+}
+
+# Configure key bindings (Controls page)
+show_controls_menu() {
+  local choice idx act
+  while true; do
+    clear
+    printf "${COLOR_CYAN}╔═══════════════════════════════════════════════════════╗${COLOR_NEUTRAL}\n"
+    printf "${COLOR_CYAN}║${COLOR_NEUTRAL}                 CONTROLS / KEY BINDINGS               ${COLOR_CYAN}║${COLOR_NEUTRAL}\n"
+    printf "${COLOR_CYAN}╚═══════════════════════════════════════════════════════╝${COLOR_NEUTRAL}\n\n"
+
+    idx=1
+    for act in $CONTROL_ACTIONS; do
+      printf "  ${COLOR_GREEN}[%d]${COLOR_NEUTRAL} %-16s ${COLOR_YELLOW}%s${COLOR_NEUTRAL}\n" \
+        "$idx" "$(control_action_name "$act")" \
+        "$(controls_code_label "$(get_key_for_action "$act")")"
+      idx=$((idx + 1))
+    done
+
+    printf "\n  ${COLOR_CYAN}[R]${COLOR_NEUTRAL} Reset to defaults\n"
+    printf "  ${COLOR_NEUTRAL}[B]${COLOR_NEUTRAL} Back to main menu\n\n"
+    printf "  Select an action to rebind: "
+    read -r choice
+
+    case "$choice" in
+      1) rebind_action up ;;
+      2) rebind_action down ;;
+      3) rebind_action left ;;
+      4) rebind_action right ;;
+      5) rebind_action fire ;;
+      6) rebind_action skill ;;
+      7) rebind_action pause ;;
+      8) rebind_action quit ;;
+      r|R)
+        reset_controls
+        printf "\n  ${COLOR_GREEN}✓ Controls reset to defaults.${COLOR_NEUTRAL}\n"
+        sleep 1
+        ;;
+      b|B|"") return ;;
+      *) ;;
+    esac
+  done
+}
+
+# Rebind one action to a freshly pressed key. Rejects invalid keys and any key
+# already bound to another action, so no control can become unreachable.
+rebind_action() {
+  local act="$1" newkey token other
+  printf "\n  Press the new key for ${COLOR_YELLOW}%s${COLOR_NEUTRAL} (Enter to cancel): " \
+    "$(control_action_name "$act")"
+
+  capture_key
+  newkey="$CAPTURED_KEY"
+
+  if [ -z "$newkey" ]; then
+    printf "\n  ${COLOR_CYAN}Cancelled.${COLOR_NEUTRAL}\n"
+    sleep 1
+    return
+  fi
+
+  token=$(controls_code_to_token "$newkey")
+  if ! controls_token_valid "$token"; then
+    printf "\n  ${COLOR_RED}Invalid key. Use arrow keys, Space, a letter or a digit.${COLOR_NEUTRAL}\n"
+    sleep 2
+    return
+  fi
+
+  for other in $CONTROL_ACTIONS; do
+    [ "$other" = "$act" ] && continue
+    if [ "$newkey" = "$(get_key_for_action "$other")" ]; then
+      printf "\n  ${COLOR_RED}'%s' is already bound to %s.${COLOR_NEUTRAL}\n" \
+        "$(controls_code_label "$newkey")" "$(control_action_name "$other")"
+      printf "  ${COLOR_RED}Pick a different key so every control stays usable.${COLOR_NEUTRAL}\n"
+      sleep 2
+      return
+    fi
+  done
+
+  set_key_for_action "$act" "$newkey"
+  save_controls
+  printf "\n  ${COLOR_GREEN}✓ %s is now bound to %s.${COLOR_NEUTRAL}\n" \
+    "$(control_action_name "$act")" "$(controls_code_label "$newkey")"
+  sleep 1
 }
 
 # Display career statistics
@@ -172,10 +260,15 @@ show_help() {
   printf "${COLOR_CYAN}║${COLOR_NEUTRAL}         STAR RUNNER - MISSION BRIEFING            ${COLOR_CYAN}║${COLOR_NEUTRAL}\n"
   printf "${COLOR_CYAN}╚═══════════════════════════════════════════════════╝${COLOR_NEUTRAL}\n\n"
   printf "${COLOR_YELLOW}CONTROLS:${COLOR_NEUTRAL}\n"
-  printf "  Arrow Keys - Navigate your ship\n"
-  printf "  [SPACE]    - Fire laser (uses ammo)\n"
-  printf "  [P]        - Pause/Resume\n"
-  printf "  [Q]        - Quit mission\n\n"
+  printf "  %-12s - Move Up\n"                  "$(controls_code_label "$KEY_UP")"
+  printf "  %-12s - Move Down\n"                "$(controls_code_label "$KEY_DOWN")"
+  printf "  %-12s - Move Left\n"                "$(controls_code_label "$KEY_LEFT")"
+  printf "  %-12s - Move Right\n"               "$(controls_code_label "$KEY_RIGHT")"
+  printf "  %-12s - Fire laser (uses ammo)\n"   "$(controls_code_label "$KEY_FIRE")"
+  printf "  %-12s - Active Skill (super burst)\n" "$(controls_code_label "$KEY_SKILL")"
+  printf "  %-12s - Pause/Resume\n"             "$(controls_code_label "$KEY_PAUSE")"
+  printf "  %-12s - Quit mission\n"             "$(controls_code_label "$KEY_QUIT")"
+  printf "  ${COLOR_CYAN}(Change these in Main Menu > Controls)${COLOR_NEUTRAL}\n\n"
   printf "${COLOR_GREEN}OBJECTIVE:${COLOR_NEUTRAL}\n"
   printf "  Navigate through space, dodge asteroids, collect crystals!\n"
   printf "  Destroy asteroids with your laser for bonus points.\n"

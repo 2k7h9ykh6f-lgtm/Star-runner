@@ -66,7 +66,41 @@ check_collisions() {
     fi
     i=$((i + 1))
   done
-  
+
+  # Check ship vs Boss asteroid
+  if [ "$boss_active" = 1 ]; then
+    boss_width=8
+    if [ "$ship_line" = "$boss_line" ]; then
+      if [ "$ship_column" -ge "$boss_col" ] && [ "$ship_column" -le $((boss_col + boss_width)) ]; then
+        if [ "$grace_timer" -gt 0 ]; then
+          :
+        elif [ "$shield_active" = 1 ]; then
+          # Shield absorbs boss hit, boss takes damage but survives
+          shield_active=0
+          boss_hp=$((boss_hp - 3))
+          if [ "$boss_hp" -le 0 ]; then
+            on_boss_defeated
+          fi
+        elif [ "$super_mode_active" = 1 ]; then
+          # Super mode damages boss heavily
+          boss_hp=$((boss_hp - 5))
+          add_score_points 10
+          if [ "$boss_hp" -le 0 ]; then
+            on_boss_defeated
+          fi
+        else
+          # Lose one life
+          player_lives=$((player_lives - 1))
+          grace_timer=12
+          reset_combo
+          if [ "$player_lives" -le 0 ]; then
+            on_game_over
+          fi
+        fi
+      fi
+    fi
+  fi
+
   # Check ship vs crystal
   if [ "$crystal_active" = 1 ]; then
     if [ "$ship_line" = "$crystal_line" ]; then

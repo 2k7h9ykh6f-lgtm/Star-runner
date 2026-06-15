@@ -72,6 +72,16 @@ combo_streak=0
 combo_timer=0
 last_points=0
 
+# Boss asteroid state
+boss_active=0
+boss_line=0
+boss_col=0
+boss_hp=0
+boss_max_hp=0
+boss_dir=1
+boss_last_level=0
+boss_death_timer=0
+
 # Accessibility + challenge tuning
 difficulty_name="Classic"
 score_multiplier=1
@@ -136,6 +146,11 @@ while true; do
       sleep 1
       move_cursor $center_line $center_col
       printf "                      "
+
+      # Trigger Boss every 3 levels (3, 6, 9, ...) if no boss currently active
+      if [ $((level % 3)) -eq 0 ] && [ "$boss_active" -ne 1 ] && [ "$boss_death_timer" -eq 0 ]; then
+        spawn_boss
+      fi
     fi
 
     # --------------------------
@@ -158,6 +173,12 @@ while true; do
     move_crystal
     move_powerup
     move_laser
+    move_boss
+
+    # Boss death "area clear" countdown
+    if [ "$boss_death_timer" -gt 0 ]; then
+      boss_death_timer=$((boss_death_timer - 1))
+    fi
 
     # --------------------------
     # Collisions & timers

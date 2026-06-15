@@ -116,6 +116,22 @@ draw_hud() {
     move_cursor 3 45
     printf "PUNISH: %-14s" "$(get_punishment_status_text)"
   fi
+
+  # Boss HP bar
+  if [ "$boss_active" = 1 ]; then
+    printf "$COLOR_RED"
+    move_cursor 4 5
+    hp_bar_len=20
+    filled=$((boss_hp * hp_bar_len / boss_max_hp))
+    [ "$filled" -lt 0 ] && filled=0
+    empty=$((hp_bar_len - filled))
+    hp_bar=""
+    b=0
+    while [ $b -lt $filled ]; do hp_bar="${hp_bar}█"; b=$((b + 1)); done
+    while [ $b -lt $hp_bar_len ]; do hp_bar="${hp_bar}░"; b=$((b + 1)); done
+    printf "BOSS: [${hp_bar}] ${boss_hp}/${boss_max_hp}"
+    printf "$COLOR_NEUTRAL"
+  fi
   
   col_offset=60
   

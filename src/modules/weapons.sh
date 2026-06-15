@@ -103,15 +103,45 @@ check_laser_hits() {
   for laser_num in 1 2 3; do
     eval "laser_is_active=\$laser${laser_num}_active"
     [ "$laser_num" = 1 ] && laser_is_active=$laser_active
-    
+
     if [ "$laser_is_active" = 0 ]; then
       continue
     fi
-    
+
     eval "current_laser_line=\$laser${laser_num}_line"
     eval "current_laser_col=\$laser${laser_num}_col"
     [ "$laser_num" = 1 ] && current_laser_line=$laser_line && current_laser_col=$laser_col
-    
+
+    # --- Check laser vs Boss ---
+    if [ "$boss_active" = 1 ]; then
+      boss_width=8
+      if [ "$current_laser_line" = "$boss_line" ]; then
+        if [ "$current_laser_col" -ge "$boss_col" ] && [ "$current_laser_col" -le $((boss_col + boss_width)) ]; then
+          # Deactivate laser
+          if [ "$laser_num" = 1 ]; then
+            laser_active=0
+          elif [ "$laser_num" = 2 ]; then
+            laser2_active=0
+          else
+            laser3_active=0
+          fi
+
+          # Damage boss
+          boss_hp=$((boss_hp - 1))
+
+          # Hit flash effect
+          move_cursor "$boss_line" "$boss_col"
+          printf "${COLOR_YELLOW}◈██████◈${COLOR_NEUTRAL}"
+
+          # Check boss death
+          if [ "$boss_hp" -le 0 ]; then
+            on_boss_defeated
+          fi
+          break
+        fi
+      fi
+    fi
+
     i=1
     while [ $i -le "$asteroid_count" ]; do
       eval "active=\$asteroid_${i}_active"

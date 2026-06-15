@@ -162,9 +162,9 @@ move_powerup() {
     # Clear old position
     move_cursor "$powerup_line" "$powerup_col"
     printf "  "
-    
+
     powerup_col=$((powerup_col - 1))
-    
+
     if [ "$powerup_col" -lt 1 ]; then
       powerup_active=0
     else
@@ -179,4 +179,117 @@ move_powerup() {
       esac
     fi
   fi
+}
+
+# -----------------------------
+# Boss Asteroid
+# -----------------------------
+
+# Spawn a boss asteroid (called every 3 levels)
+spawn_boss() {
+  boss_max_hp=$((10 + level * 2))
+  boss_hp=$boss_max_hp
+  boss_line=$((NUM_LINES / 2))
+  boss_col=$((NUM_COLUMNS - 10))
+  boss_dir=1
+  boss_active=1
+
+  # Boss entrance announcement
+  printf "$COLOR_RED"
+  center_col=$((NUM_COLUMNS / 2 - 12))
+  center_line=$((NUM_LINES / 2 - 2))
+  move_cursor $center_line $center_col
+  printf " ⚠ BOSS ASTEROID ⚠ "
+  printf "$COLOR_NEUTRAL"
+  sleep 1
+  move_cursor $center_line $center_col
+  printf "                       "
+}
+
+# Move boss and render it each frame
+move_boss() {
+  if [ "$boss_active" != 1 ]; then
+    return
+  fi
+
+  boss_width=8
+
+  # Clear old position
+  move_cursor "$boss_line" "$boss_col"
+  printf "        "  # 8 spaces
+
+  # Drift left slowly
+  boss_col=$((boss_col - 1))
+
+  # Vertical drift: bounce between rows 5 and NUM_LINES-5
+  boss_line=$((boss_line + boss_dir))
+  if [ "$boss_line" -le 5 ]; then
+    boss_dir=1
+  elif [ "$boss_line" -ge $((NUM_LINES - 5)) ]; then
+    boss_dir=-1
+  fi
+
+  # If boss drifts off left edge, it escapes (deactivate, no reward)
+  if [ "$boss_col" -lt 1 ]; then
+    boss_active=0
+    return
+  fi
+
+  # Draw boss at new position (large red entity)
+  move_cursor "$boss_line" "$boss_col"
+  printf "${COLOR_RED}◈██████◈${COLOR_NEUTRAL}"
+}
+
+# Handle boss defeat: rewards + area clear
+on_boss_defeated() {
+  boss_active=0
+
+  # Clear boss from screen
+  move_cursor "$boss_line" "$boss_col"
+  printf "        "
+
+  # Explosion effect
+  move_cursor "$boss_line" "$boss_col"
+  printf "${COLOR_YELLOW}✶✶✶✶✶✶✶✶${COLOR_NEUTRAL}"
+
+  # Area clear: destroy all active asteroids
+  i=1
+  while [ $i -le "$asteroid_count" ]; do
+    eval "active=\$asteroid_${i}_active"
+    if [ "$active" = 1 ]; then
+      eval "aline=\$asteroid_${i}_line"
+      eval "acol=\$asteroid_${i}_col"
+      eval "asize=\$asteroid_${i}_size"
+      eval "asteroid_${i}_active=0"
+      move_cursor "$aline" "$acol"
+      case $asize in
+        1) printf "   " ;;
+        2) printf "    " ;;
+        3) printf "     " ;;
+      esac
+    fi
+    i=$((i + 1))
+  done
+
+  # Rewards: score, crystals, ammo
+  add_score_points 100
+  crystals_collected=$((crystals_collected + 3))
+  ammo=$((ammo + 10))
+
+  # Area clear notification
+  printf "$COLOR_CYAN"
+  center_col=$((NUM_COLUMNS / 2 - 14))
+  center_line=$((NUM_LINES / 2 + 2))
+  move_cursor $center_line $center_col
+  printf " ✦ AREA CLEARED! +3◇ +100pts ✦ "
+  printf "$COLOR_NEUTRAL"
+
+  # Brief pause then clear message
+  sleep 1
+  move_cursor $center_line $center_col
+  printf "                                 "
+
+  # Start grace period so player has brief invulnerability
+  boss_death_timer=15
+  grace_timer=15
 }

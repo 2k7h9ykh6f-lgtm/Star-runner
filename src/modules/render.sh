@@ -112,7 +112,13 @@ draw_hud() {
   move_cursor 3 5
   printf "MODE: $difficulty_name | COMBO: x$combo_streak"
 
-  if [ "$(type -t get_punishment_status_text)" = "function" ]; then
+  if [ "${challenge_mode:-0}" = 1 ]; then
+    # Challenge objective + live countdown (replaces the punishment readout)
+    printf "$COLOR_GREEN"
+    move_cursor 3 45
+    printf "⏱ %ss / %ss - max score!" "$(challenge_remaining)" "${CHALLENGE_DURATION:-120}"
+    printf "$COLOR_YELLOW"
+  elif [ "$(type -t get_punishment_status_text)" = "function" ]; then
     move_cursor 3 45
     printf "PUNISH: %-14s" "$(get_punishment_status_text)"
   fi

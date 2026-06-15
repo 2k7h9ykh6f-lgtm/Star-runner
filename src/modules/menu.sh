@@ -27,6 +27,9 @@ EOF
   printf "  ${COLOR_GREEN}Welcome back, ${player_title} ${player_name}!${COLOR_NEUTRAL} (Age: $player_age)\n\n"
   printf "  ${COLOR_YELLOW}💎 Crystal Bank: ${crystal_bank}${COLOR_NEUTRAL}\n"
   printf "  ${COLOR_MAGENTA}🏆 High Score: ${high_score}${COLOR_NEUTRAL}\n"
+  if [ "$(type -t get_challenge_best)" = "function" ]; then
+    printf "  ${COLOR_GREEN}🎯 Challenge Best: $(get_challenge_best)${COLOR_NEUTRAL}\n"
+  fi
   printf "  ${COLOR_CYAN}Current Ship: $(get_ship_name "$current_ship")${COLOR_NEUTRAL} $(get_ship_icon "$current_ship")\n"
   printf "  ${COLOR_MAGENTA}Current Skin: $(get_skin_name "$current_skin")${COLOR_NEUTRAL}\n\n"
   printf "  ${COLOR_WHITE}Difficulty: ${difficulty_name}${COLOR_NEUTRAL}\n\n"
@@ -35,12 +38,14 @@ EOF
   printf "${COLOR_CYAN}║${COLOR_NEUTRAL}                      MAIN MENU                        ${COLOR_CYAN}║${COLOR_NEUTRAL}\n"
   printf "${COLOR_CYAN}╚═══════════════════════════════════════════════════════╝${COLOR_NEUTRAL}\n\n"
   printf "  ${COLOR_GREEN}[1]${COLOR_NEUTRAL} Start Mission\n"
-  printf "  ${COLOR_YELLOW}[2]${COLOR_NEUTRAL} Hangar (Ships & Skins)\n"
-  printf "  ${COLOR_MAGENTA}[3]${COLOR_NEUTRAL} View Stats\n"
-  printf "  ${COLOR_CYAN}[4]${COLOR_NEUTRAL} Help\n"
-  printf "  ${COLOR_NEUTRAL}[5]${COLOR_NEUTRAL} Update\n"
-  printf "  ${COLOR_WHITE}[6]${COLOR_NEUTRAL} Difficulty\n"
-  printf "  ${COLOR_RED}[7]${COLOR_NEUTRAL} Quit\n\n"
+  printf "  ${COLOR_YELLOW}[2]${COLOR_NEUTRAL} Challenge Run (${CHALLENGE_DURATION:-120}s time attack)\n"
+  printf "  ${COLOR_MAGENTA}[3]${COLOR_NEUTRAL} Challenge Scores\n"
+  printf "  ${COLOR_YELLOW}[4]${COLOR_NEUTRAL} Hangar (Ships & Skins)\n"
+  printf "  ${COLOR_MAGENTA}[5]${COLOR_NEUTRAL} View Stats\n"
+  printf "  ${COLOR_CYAN}[6]${COLOR_NEUTRAL} Help\n"
+  printf "  ${COLOR_NEUTRAL}[7]${COLOR_NEUTRAL} Update\n"
+  printf "  ${COLOR_WHITE}[8]${COLOR_NEUTRAL} Difficulty\n"
+  printf "  ${COLOR_RED}[9]${COLOR_NEUTRAL} Quit\n\n"
   printf "  Select option: "
   
   read -r menu_choice
@@ -50,30 +55,38 @@ EOF
       return 0
       ;;
     2)
-      show_hangar
-      show_main_menu
+      start_challenge_mode
+      return 0
       ;;
     3)
-      show_stats
+      show_challenge_scores
       show_main_menu
       ;;
     4)
+      show_hangar
+      show_main_menu
+      ;;
+    5)
+      show_stats
+      show_main_menu
+      ;;
+    6)
       show_help
       printf "\n  Press Enter to return..."
       read -r
       show_main_menu
       ;;
-    5)
+    7)
       update
       printf "\n  Press Enter to return..."
       read -r
       show_main_menu
       ;;
-    6)
+    8)
       show_difficulty_menu
       show_main_menu
       ;;
-    7)
+    9)
       printf "\n  ${COLOR_CYAN}Thanks for playing! Fly safe, pilot!${COLOR_NEUTRAL}\n\n"
       exit 0
       ;;

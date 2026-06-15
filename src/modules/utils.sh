@@ -92,6 +92,13 @@ on_enter() {
 
 # Cleanup and show final statistics
 on_exit() {
+  # Challenge Run keeps its own leaderboard and must never write the career
+  # profile, crystal bank or shop state. Route challenge exits (quit, death,
+  # SIGINT, time-up) to end_challenge before any profile save happens.
+  if [ "${challenge_mode:-0}" = 1 ] && [ "$(type -t end_challenge)" = "function" ]; then
+    end_challenge
+  fi
+
   if [ -n "$player_name" ]; then
     if [ "$score" -gt "$high_score" ]; then
       high_score=$score

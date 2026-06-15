@@ -27,6 +27,7 @@ source "$SCRIPT_DIR/modules/input.sh"
 source "$SCRIPT_DIR/modules/effects.sh"
 source "$SCRIPT_DIR/modules/punishments.sh"
 source "$SCRIPT_DIR/modules/inventory.sh"   # Optional: career stats module
+source "$SCRIPT_DIR/modules/challenge.sh"   # Fixed-rule challenge mode + leaderboard
 
 # Init tamper-proof achievements
 #init_achievements
@@ -108,6 +109,9 @@ sleep 2
 move_cursor $center_line $center_col
 printf "                           "
 
+# Start the challenge clock at gameplay (excludes the launch animation)
+[ "$challenge_mode" = 1 ] && challenge_start_epoch=$(date +%s)
+
 # ------------------------------
 # MAIN GAME LOOP
 # ------------------------------
@@ -118,10 +122,18 @@ while true; do
     # --------------------------
     handle_input
 
+    # End the challenge run when the timer expires (no-op in normal mode)
+    challenge_check_time
+
     # --------------------------
     # Level progression
     # --------------------------
-    new_level=$((score / 200 + 1))
+    if [ "$challenge_mode" = 1 ]; then
+      # Fixed, time-based difficulty curve (independent of score/ship/shop)
+      new_level=$(( $(challenge_elapsed) / CHALLENGE_RAMP + 1 ))
+    else
+      new_level=$((score / 200 + 1))
+    fi
     if [ "$new_level" -ne "$level" ]; then
       level=$new_level
       speed_multiplier=$((level - 1))
@@ -143,8 +155,13 @@ while true; do
     # --------------------------
     [ $((frame % 10)) -eq 0 ] && draw_stars
 
-    spawn_frequency=$((4 - speed_multiplier))
-    [ "$spawn_frequency" -lt "$spawn_floor" ] && spawn_frequency=$spawn_floor
+    if [ "$challenge_mode" = 1 ]; then
+      # Fixed spawn cadence so every run faces identical pressure
+      spawn_frequency=$CHALLENGE_SPAWN_FREQ
+    else
+      spawn_frequency=$((4 - speed_multiplier))
+      [ "$spawn_frequency" -lt "$spawn_floor" ] && spawn_frequency=$spawn_floor
+    fi
     [ $((frame % spawn_frequency)) -eq 0 ] && spawn_asteroid
 
     [ $((frame % 20)) -eq 0 ] && { spawn_crystal; spawn_powerup; }
